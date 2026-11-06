@@ -1,4 +1,3 @@
-
 def run(cmd) {
     if (isUnix()) {
         sh cmd
@@ -11,11 +10,13 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'jenkin.azurecr.io'  // YOUR login server
+        REGISTRY = 'jenkinaweb.azurecr.io' //jenkinsweb
         IMAGE    = 'hello-az'
+        BUILD_NUMBER = "latest"
     }
 
     stages {
+
         stage('Build') {
             steps {
                 script {
@@ -28,6 +29,29 @@ pipeline {
             steps {
                 script {
                     run "docker run --rm ${IMAGE}:${BUILD_NUMBER} nginx -t"
+                }
+            }
+        }
+
+        stage('Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'jenkinsweb',
+                        usernameVariable: 'U',
+                        passwordVariable: 'P'
+                    )]) {
+
+                        if (isUnix()) {
+                            sh 'printf "%s" "$P" | docker login "$REGISTRY" -u "$U" --password-stdin'
+                        } else {
+                            bat 'echo %P% | docker login %REGISTRY% -u %U% --password-stdin'
+                        }
+                    }
+
+                    run "docker tag ${IMAGE}:${BUILD_NUMBER} ${REGISTRY}/${IMAGE}:latest"
+
+                    run "docker push ${REGISTRY}/${IMAGE}:latest"
                 }
             }
         }
