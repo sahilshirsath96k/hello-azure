@@ -37,7 +37,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(
-                        credentialsId: 'jenkinsweb',
+                        credentialsId: 'az-web',
                         usernameVariable: 'U',
                         passwordVariable: 'P'
                     )]) {
