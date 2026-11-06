@@ -10,7 +10,7 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = 'jenkinaweb.azurecr.io' //jenkinsweb
+        REGISTRY = 'jenkinsweb.azurecr.io' //jenkinsweb
         IMAGE    = 'hello-az'
         BUILD_NUMBER = "latest"
     }
